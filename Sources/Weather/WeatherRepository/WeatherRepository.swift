@@ -72,12 +72,3 @@ public final class WeatherRepositoryImplementation: WeatherRepository {
         )
     }
 }
-
-// MARK: - Configuration
-
-@available(iOS 13.0, *)
-public extension WeatherRepository {
-    static func configured(with service: Service, apiKey: String) -> WeatherRepository {
-        return WeatherRepositoryImplementation(service: service, apiKey: apiKey)
-    }
-}

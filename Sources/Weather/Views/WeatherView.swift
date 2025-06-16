@@ -12,6 +12,10 @@ import SwiftUI
 public struct WeatherView: View {
     @ObservedObject var viewModel: WeatherViewModel
     
+    public init(viewModel: WeatherViewModel){
+        self.viewModel = viewModel
+    }
+    
     public var body: some View {
         NavigationView {
             VStack(spacing: 20) {
