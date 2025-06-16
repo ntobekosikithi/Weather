@@ -8,6 +8,7 @@
 import Foundation
 import Utilities
 
+@available(iOS 13.0.0, *)
 public protocol WeatherRepository: Sendable {
     func getWeatherForCoordinates(lat: Double, lon: Double) async throws -> Weather
 }
