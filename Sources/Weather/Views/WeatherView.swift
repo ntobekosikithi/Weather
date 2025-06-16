@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-@available(iOS 115.0, *)
+@available(iOS 15.0, *)
 public struct WeatherView: View {
     @ObservedObject var viewModel: WeatherViewModel
     
