@@ -8,40 +8,61 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct LocationStatusView: View {
+struct LocationStatusView: View {
     @ObservedObject var viewModel: WeatherViewModel
     
-    public var body: some View {
+    var body: some View {
         if viewModel.isLocationNotDetermined {
-            VStack(spacing: 8) {
+            VStack(spacing: 12) {
+                Image(systemName: "location.circle")
+                    .font(.system(size: 48))
+                    .foregroundColor(.blue)
+                
                 Text("Location Permission Needed")
                     .font(.headline)
-                Text("Allow location access to get weather for your area")
-                    .font(.caption)
+                
+                Text("Enable location access to get current weather conditions for your workouts")
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                 
                 Button("Enable Location") {
-                    viewModel.requestLocationPermission()
+                    Task {
+                        await viewModel.requestLocationAndFetchWeather()
+                    }
                 }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
             }
             .padding()
             .background(Color.blue.opacity(0.1))
-            .cornerRadius(8)
+            .cornerRadius(12)
             
         } else if viewModel.isLocationDenied {
-            VStack(spacing: 8) {
+            VStack(spacing: 12) {
+                Image(systemName: "location.slash")
+                    .font(.system(size: 48))
+                    .foregroundColor(.orange)
+                
                 Text("Location Access Denied")
                     .font(.headline)
                     .foregroundColor(.orange)
-                Text("Enable location in Settings to get local weather. Using default location.")
-                    .font(.caption)
+                
+                Text("Please enable location access in Settings to get local weather conditions")
+                    .font(.body)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
+                
+                Button("Open Settings") {
+                    if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(settingsUrl)
+                    }
+                }
+                .buttonStyle(.bordered)
             }
             .padding()
             .background(Color.orange.opacity(0.1))
-            .cornerRadius(8)
+            .cornerRadius(12)
         }
     }
 }

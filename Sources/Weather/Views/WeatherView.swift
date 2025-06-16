@@ -19,18 +19,20 @@ public struct WeatherView: View {
     public var body: some View {
         NavigationView {
             VStack(spacing: 20) {
-                // Location Permission Status
+
                 LocationStatusView(viewModel: viewModel)
-                
-                // Current Weather Card
-                CurrentWeatherCard(viewModel: viewModel)
+
+                if viewModel.isLocationAuthorized {
+                    CurrentWeatherCard(viewModel: viewModel)
+                }
                 
                 Spacer()
             }
             .padding()
             .navigationTitle("Weather")
             .task {
-                if viewModel.currentWeather == nil {
+                // Only auto-fetch if location is already authorized
+                if viewModel.isLocationAuthorized && viewModel.currentWeather == nil {
                     await viewModel.getCurrentWeather()
                 }
             }

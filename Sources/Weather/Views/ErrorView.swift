@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
-public struct ErrorView: View {
+@available(iOS 15.0, *)
+struct ErrorView: View {
     let error: Error
     let onRetry: () -> Void
-
-    public var body: some View {
+    
+    var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 40))
@@ -29,6 +29,7 @@ public struct ErrorView: View {
             Button("Try Again") {
                 onRetry()
             }
+            .buttonStyle(.borderedProminent)
         }
         .frame(height: 200)
     }

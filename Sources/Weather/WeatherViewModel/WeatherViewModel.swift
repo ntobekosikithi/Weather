@@ -22,10 +22,6 @@ public final class WeatherViewModel: ObservableObject {
     private let weatherRepository: WeatherRepository
     private let logger: Logger
     
-    // MARK: - Default coordinates (New York as fallback)
-    private let defaultCoordinates = (lat: 40.7128, lon: -74.0060)
-    private let defaultCityName = "New York"
-    
     // MARK: - Initialization
     
     public init(
@@ -51,7 +47,11 @@ public final class WeatherViewModel: ObservableObject {
         do {
             logger.info("Starting weather fetch process")
             
-            let coordinates = try await getCurrentCoordinates()
+            guard let coordinates = try await getCurrentCoordinates() else {
+                weatherState = .error(WeatherError.locationNotFound)
+                return
+            }
+            
             let weather = try await weatherRepository.getWeatherForCoordinates(
                 lat: coordinates.lat,
                 lon: coordinates.lon
@@ -70,12 +70,17 @@ public final class WeatherViewModel: ObservableObject {
         logger.info("Refreshing weather data")
         await getCurrentWeather()
     }
-
-    public func requestLocationPermission() {
-        logger.info("Requesting location permission")
-        locationManager.requestLocation()
-    }
     
+    public func requestLocationAndFetchWeather() async {
+        logger.info("Requesting location permission and fetching weather")
+        locationManager.requestLocation()
+        
+        // Wait for location update
+        try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
+        
+        await getCurrentWeather()
+    }
+
     // MARK: - Private Methods
     
     private func setupLocationObserver() {
@@ -83,25 +88,24 @@ public final class WeatherViewModel: ObservableObject {
         logger.info("Location observer setup completed")
     }
     
-    private func getCurrentCoordinates() async throws -> (lat: Double, lon: Double) {
-        // Try to get current location
-        if locationManager.location == nil &&
-           (locationManager.authorizationStatus == .authorizedWhenInUse ||
-            locationManager.authorizationStatus == .authorizedAlways) {
-            
+    private func getCurrentCoordinates() async throws -> (lat: Double, lon: Double)? {
+        guard isLocationAuthorized else {
+            logger.info("Location not authorized")
+            return nil
+        }
+        
+        if locationManager.location == nil {
             locationManager.requestLocation()
-            
-            // Wait for location update
             try await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
         }
         
-        if let location = locationManager.location {
-            logger.info("Using current location coordinates")
-            return (lat: location.coordinate.latitude, lon: location.coordinate.longitude)
-        } else {
-            logger.info("Using fallback coordinates (\(defaultCityName))")
-            return defaultCoordinates
+        guard let location = locationManager.location else {
+            logger.info("No location available")
+            return nil
         }
+        
+        logger.info("Using current location coordinates")
+        return (lat: location.coordinate.latitude, lon: location.coordinate.longitude)
     }
 }
 
@@ -109,7 +113,6 @@ public final class WeatherViewModel: ObservableObject {
 
 @available(iOS 14.0, *)
 public extension WeatherViewModel {
-
     var isLocationAuthorized: Bool {
         return locationManager.authorizationStatus == .authorizedWhenInUse ||
                locationManager.authorizationStatus == .authorizedAlways
@@ -141,7 +144,7 @@ public extension WeatherViewModel {
         case .notDetermined:
             return "Location permission needed for local weather"
         case .denied, .restricted:
-            return "Location access denied. Using default location."
+            return "Location access denied. Enable location to get weather."
         case .authorizedWhenInUse, .authorizedAlways:
             return "Location access granted"
         @unknown default:

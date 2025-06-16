@@ -8,10 +8,10 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct CurrentWeatherCard: View {
+struct CurrentWeatherCard: View {
     @ObservedObject var viewModel: WeatherViewModel
     
-    public var body: some View {
+    var body: some View {
         VStack(spacing: 16) {
             HStack {
                 Text("Current Weather")
@@ -58,21 +58,18 @@ public struct CurrentWeatherCard: View {
                 VStack(spacing: 16) {
                     Image(systemName: "cloud.sun")
                         .font(.system(size: 48))
-                        .foregroundColor(.blue)
-                    
-                    Text("Get Weather")
-                        .font(.headline)
-                    
-                    Text("Tap to get current weather conditions")
-                        .font(.caption)
                         .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
                     
-                    Button("Get Current Weather") {
+                    Text("No Weather Data")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
+                    Button("Get Weather") {
                         Task {
                             await viewModel.getCurrentWeather()
                         }
                     }
+                    .buttonStyle(.borderedProminent)
                 }
                 .frame(height: 200)
             }

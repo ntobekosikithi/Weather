@@ -8,10 +8,10 @@
 import SwiftUI
 
 @available(iOS 14.0, *)
-public struct WeatherContentView: View {
+struct WeatherContentView: View {
     let weather: Weather
-
-    public var body: some View {
+    
+    var body: some View {
         VStack(spacing: 16) {
             // City and Temperature
             VStack(spacing: 8) {
