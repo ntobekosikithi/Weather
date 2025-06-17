@@ -21,6 +21,7 @@ public class LocationManager: NSObject, ObservableObject {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyReduced
     }
+    
     public func requestLocation() {
         switch authorizationStatus {
         case .notDetermined:

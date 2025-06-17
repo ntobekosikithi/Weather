@@ -15,7 +15,7 @@ public final class WeatherViewModel: ObservableObject {
     
     // MARK: - Published Properties
     @Published public private(set) var weatherState: LoadingState<Weather> = .idle
-    @Published public private(set) var locationManager = LocationManager()
+    @Published public private(set) var locationManager: LocationManager
     @Published public private(set) var isRefreshing = false
     
     // MARK: - Dependencies
@@ -26,9 +26,11 @@ public final class WeatherViewModel: ObservableObject {
     
     public init(
         weatherRepository: WeatherRepository,
+        locationManager: LocationManager = LocationManager(),
         logger: Logger = LoggerImplementation()
     ) {
         self.weatherRepository = weatherRepository
+        self.locationManager = locationManager
         self.logger = logger
         
         setupLocationObserver()
