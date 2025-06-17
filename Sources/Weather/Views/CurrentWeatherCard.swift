@@ -29,7 +29,7 @@ struct CurrentWeatherCard: View {
                     emptyStateView
                 }
             }
-            .frame(height: 200)
+            .frame(height: 400)
         }
         .padding()
         .background(Color(.systemGray6))
